@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet id="add_bill_id" author="dguner">
+        <addColumn tableName="bill">
+            <column name="id"
+                    position="0"
+                    type="text"/>
+        </addColumn>
+        <sql>UPDATE bill bill
+            SET id=subquery.id
+            FROM (SELECT title, (regexp_split_to_array(link, E'\\?bId='))[2] as id FROM bill) AS subquery
+            WHERE bill.title=subquery.title;</sql>
+        <addNotNullConstraint columnName="id"
+                              tableName="bill"/>
+        <dropColumn tableName="bill"
+                    columnName="link" />
+    </changeSet>
+</databaseChangeLog>
